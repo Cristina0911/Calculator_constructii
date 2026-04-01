@@ -413,7 +413,7 @@ body{
 <div class="hdr">
   <div class="hdr-tag">Calculator Parter</div>
   <div class="hdr-title">Calculator Constructii</div>
-  <div class="hdr-sub">Introdu dimensiunile — primești calcule exacte, fără aproximări</div>
+  <div class="hdr-sub">Introdu dimensiunile în cm — primești calcule exacte, fără aproximări</div>
 </div>
 
 <!-- TABS CAMERE -->
@@ -439,20 +439,21 @@ body{
   <div class="dims">
     <div class="dbox">
       <label>Lungime</label>
-      <input type="text" id="iL" inputmode="text" placeholder="4.60" oninput="fixVirgula(this);clearRes()">
-      <span class="unit">m</span>
+      <input type="text" id="iL" inputmode="numeric" pattern="[0-9]*" placeholder="460" oninput="clearRes()" onblur="formatDim(this)">
+      <span class="unit">cm</span>
     </div>
     <div class="dbox">
       <label>Lățime</label>
-      <input type="text" id="iW" inputmode="text" placeholder="5.50" oninput="fixVirgula(this);clearRes()">
-      <span class="unit">m</span>
+      <input type="text" id="iW" inputmode="numeric" pattern="[0-9]*" placeholder="550" oninput="clearRes()" onblur="formatDim(this)">
+      <span class="unit">cm</span>
     </div>
     <div class="dbox">
       <label>H etaj</label>
-      <input type="text" id="iH" inputmode="text" placeholder="2.80" oninput="fixVirgula(this);clearRes()">
-      <span class="unit">m</span>
+      <input type="text" id="iH" inputmode="numeric" pattern="[0-9]*" placeholder="280" oninput="clearRes()" onblur="formatDim(this)">
+      <span class="unit">cm</span>
     </div>
   </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'DM Mono',monospace;">ex: 4.60m → scrie <strong>460</strong> &nbsp;|&nbsp; 5.50m → <strong>550</strong> &nbsp;|&nbsp; 2.80m → <strong>280</strong></div>
 </div>
 
 <!-- PLANSEU -->
@@ -671,7 +672,7 @@ let planSel='beton';
 let terenSel='bun';
 const elSel={stalp:true,grinda:true,placa:true,fundatie:true,zid:false,acoperis:false,trepte:false};
 
-function fixVirgula(el){var v=el.value.replace(/,/g,".");var p=v.split(".");if(p.length>2)v=p[0]+"."+p.slice(1).join("");el.value=v;}function gv(id){var v=document.getElementById(id).value.replace(/,/g,".");return parseFloat(v)||0;}
+function formatDim(el){el.value=el.value.replace(/[^0-9]/g,"");}function gv(id){var v=parseInt(document.getElementById(id).value.replace(/[^0-9]/g,""))||0;return v/100;}
 function r(n,d=2){return +n.toFixed(d);}
 function rc(v,l,full){return `<div class="rc${full?' full':''}"><div class="rv">${v}</div><div class="rl">${l}</div></div>`;}
 function blk(tag,val,sub,grid,ok,info){
