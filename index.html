@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calculator Constructii Parter</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f4f1;
+  --surface:#ffffff;
+  --border:#e2ddd6;
+  --border-focus:#111;
+  --text:#111111;
+  --muted:#999;
+  --accent:#111;
+  --accent-fg:#fff;
+  --tag-bg:#111;
+  --tag-fg:#fff;
+  --on-bg:#111;
+  --on-fg:#fff;
+  --on-border:#111;
+  --green:#166534;--green-bg:#f0fdf4;--green-bd:#bbf7d0;
+  --blue:#1e40af;--blue-bg:#eff6ff;--blue-bd:#bfdbfe;
+  --warn:#92400e;--warn-bg:#fffbeb;--warn-bd:#fde68a;
+  --red:#991b1b;--red-bg:#fef2f2;--red-bd:#fecaca;
+  --radius:10px;
+  --radius-sm:8px;
+}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.5;
+}
+
+/* HEADER */
+.hdr{
+  padding:28px 20px 22px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.hdr-tag{
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.hdr-title{
+  font-size:22px;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:4px;
+  letter-spacing:-.3px;
+}
+.hdr-sub{
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* TABS CAMERE */
+.ctabs{
+  display:flex;
+  overflow-x:auto;
+  scrollbar-width:none;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;
+  gap:4px;
+}
+.ctabs::-webkit-scrollbar{display:none}
+.ctab{
+  flex:0 0 auto;
+  padding:12px 14px 11px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  color:var(--muted);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  letter-spacing:-.1px;
+  transition:color .15s, border-color .15s;
+}
+.ctab.active{
+  color:var(--text);
+  border-bottom-color:var(--text);
+}
+.ctab-add{
+  flex:0 0 auto;
+  padding:12px 14px;
+  font-size:18px;
+  color:var(--muted);
+  cursor:pointer;
+  line-height:1;
+}
+
+/* SECTIUNI */
+.sec{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:20px;
+}
+.sec-lbl{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:12px;
+}
+
+/* LOCALITATE SEARCH */
+.loc-wrap{position:relative;margin-bottom:10px;}
+.loc-input{
+  width:100%;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  font-size:15px;
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  outline:none;
+  transition:border-color .15s;
+}
+.loc-input::placeholder{color:var(--muted);}
+.loc-input:focus{border-color:var(--border-focus);}
+.loc-dropdown{
+  position:absolute;
+  top:calc(100% + 4px);
+  left:0;right:0;
+  background:var(--surface);
+  border:1.5px solid var(--border-focus);
+  border-radius:var(--radius);
+  max-height:220px;
+  overflow-y:auto;
+  z-index:99;
+  display:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.10);
+}
+.loc-item{
+  padding:11px 14px;
+  font-size:14px;
+  cursor:pointer;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.loc-item:last-child{border-bottom:none;}
+.loc-item:hover{background:var(--bg);}
+.loc-item .li-name{font-weight:500;}
+.loc-item .li-zona{
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  padding:2px 8px;
+  border-radius:4px;
+  font-weight:500;
+  letter-spacing:.04em;
+}
+.zona-A .li-zona{background:#fee2e2;color:#991b1b;}
+.zona-B .li-zona{background:#ffedd5;color:#92400e;}
+.zona-C .li-zona{background:#fef9c3;color:#713f12;}
+.zona-D .li-zona{background:#dcfce7;color:#166534;}
+.zona-E .li-zona{background:#dbeafe;color:#1e40af;}
+.loc-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:500;
+  margin-top:8px;
+  font-family:'DM Mono',monospace;
+  letter-spacing:.03em;
+}
+.loc-badge.A{background:#fee2e2;color:#991b1b;}
+.loc-badge.B{background:#ffedd5;color:#92400e;}
+.loc-badge.C{background:#fef9c3;color:#713f12;}
+.loc-badge.D{background:#dcfce7;color:#166534;}
+.loc-badge.E{background:#dbeafe;color:#1e40af;}
+
+/* DIMENSIUNI */
+.dims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
+.dbox{
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:11px 12px 10px;
+  position:relative;
+  transition:border-color .15s;
+}
+.dbox:focus-within{border-color:var(--border-focus);}
+.dbox label{
+  display:block;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.dbox input{
+  background:transparent;
+  border:none;
+  outline:none;
+  font-family:'DM Mono',monospace;
+  font-size:20px;
+  font-weight:500;
+  color:var(--text);
+  width:100%;
+}
+.dbox input::placeholder{color:#ccc;font-size:16px;}
+.dbox .unit{
+  position:absolute;
+  right:9px;bottom:8px;
+  font-size:10px;
+  color:var(--muted);
+  font-family:'DM Mono',monospace;
+}
+
+/* TOGGLE BUTTONS — plan / teren */
+.plan-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.plan-btn{
+  padding:12px 10px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--bg);
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  font-weight:500;
+  cursor:pointer;
+  color:var(--muted);
+  text-align:center;
+  transition:all .15s;
+  line-height:1.5;
+}
+.plan-btn .pb-icon{font-size:18px;display:block;margin-bottom:3px;}
+.plan-btn.on{
+  background:var(--on-bg);
+  border-color:var(--on-border);
+  color:var(--on-fg);
+}
+
+/* TEREN */
+.teren-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.ter-btn{
+  padding:10px 6px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  background:var(--bg);
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  cursor:pointer;
+  color:var(--muted);
+  text-align:center;
+  transition:all .15s;
+  line-height:1.5;
+}
+.ter-btn small{display:block;font-size:10px;color:var(--muted);margin-top:2px;}
+.ter-btn.on{
+  background:var(--on-bg);
+  border-color:var(--on-border);
+  color:var(--on-fg);
+}
+.ter-btn.on small{color:rgba(255,255,255,.6);}
+
+/* ELEMENTE */
+.elems{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.el-btn{
+  padding:13px 10px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--bg);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  color:var(--muted);
+  text-align:center;
+  transition:all .15s;
+  line-height:1.5;
+}
+.el-btn .ei{font-size:18px;display:block;margin-bottom:3px;}
+.el-btn.on{
+  background:var(--on-bg);
+  border-color:var(--on-border);
+  color:var(--on-fg);
+}
+
+/* CALC BTN */
+.calc-wrap{padding:16px 20px;background:var(--bg);}
+.calc-btn{
+  width:100%;
+  padding:15px;
+  background:var(--text);
+  border:none;
+  border-radius:var(--radius);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+  cursor:pointer;
+  letter-spacing:.02em;
+  transition:opacity .15s;
+}
+.calc-btn:active{opacity:.8;}
+
+/* RESULTS */
+.results{padding:0 20px 40px;display:none;}
+.results.show{display:block;}
+
+.rblk{
+  margin-top:14px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--surface);
+}
+.rhead{
+  padding:14px 16px;
+  background:var(--text);
+  color:#fff;
+}
+.rh-tag{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+  margin-bottom:2px;
+}
+.rh-val{
+  font-family:'DM Mono',monospace;
+  font-size:22px;
+  font-weight:500;
+  color:#fff;
+  margin:2px 0;
+}
+.rh-sub{font-size:11px;color:rgba(255,255,255,.4);}
+
+.rbody{padding:14px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.rc{
+  background:var(--bg);
+  border-radius:var(--radius-sm);
+  padding:10px 12px;
+}
+.rc.full{grid-column:1/-1;}
+.rc .rv{
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text);
+  margin-bottom:2px;
+}
+.rc .rl{font-size:11px;color:var(--muted);}
+
+.rok{
+  background:var(--green-bg);
+  border:1px solid var(--green-bd);
+  border-radius:var(--radius-sm);
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--green);
+  font-weight:500;
+  line-height:1.5;
+}
+.rinfo{
+  background:var(--blue-bg);
+  border:1px solid var(--blue-bd);
+  border-radius:var(--radius-sm);
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--blue);
+  margin-top:8px;
+  line-height:1.5;
+  font-family:'DM Mono',monospace;
+}
+.rerr{
+  margin-top:14px;
+  background:var(--red-bg);
+  border:1.5px solid var(--red-bd);
+  border-radius:12px;
+  padding:14px;
+  font-size:13px;
+  color:var(--red);
+}
+
+.legal{
+  margin-top:16px;
+  background:var(--warn-bg);
+  border:1px solid var(--warn-bd);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  font-size:12px;
+  color:var(--warn);
+  line-height:1.6;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-tag">Calculator Parter</div>
+  <div class="hdr-title">Calculator Constructii</div>
+  <div class="hdr-sub">Introdu dimensiunile — primești calcule exacte, fără aproximări</div>
+</div>
+
+<!-- TABS CAMERE -->
+<div class="ctabs" id="ctabs">
+  <div class="ctab active" onclick="selCam(0,this)">Camera 1</div>
+  <div class="ctab" onclick="selCam(1,this)">Camera 2</div>
+  <div class="ctab-add" onclick="addCam()">+</div>
+</div>
+
+<!-- LOCALITATE -->
+<div class="sec">
+  <div class="sec-lbl">Localitatea (zona seismică automată)</div>
+  <div class="loc-wrap">
+    <input class="loc-input" id="loc-input" type="text" placeholder="Scrie orașul / județul..." oninput="searchLoc(this.value)" autocomplete="off">
+    <div class="loc-dropdown" id="loc-dd"></div>
+  </div>
+  <div id="loc-badge"></div>
+</div>
+
+<!-- DIMENSIUNI -->
+<div class="sec">
+  <div class="sec-lbl" id="cam-lbl">Dimensiuni camera 1</div>
+  <div class="dims">
+    <div class="dbox">
+      <label>Lungime</label>
+      <input type="number" id="iL" inputmode="decimal" placeholder="4.60" step="0.01" oninput="clearRes()">
+      <span class="unit">m</span>
+    </div>
+    <div class="dbox">
+      <label>Lățime</label>
+      <input type="number" id="iW" inputmode="decimal" placeholder="5.50" step="0.01" oninput="clearRes()">
+      <span class="unit">m</span>
+    </div>
+    <div class="dbox">
+      <label>H etaj</label>
+      <input type="number" id="iH" inputmode="decimal" placeholder="2.80" step="0.05" oninput="clearRes()">
+      <span class="unit">m</span>
+    </div>
+  </div>
+</div>
+
+<!-- PLANSEU -->
+<div class="sec">
+  <div class="sec-lbl">Tipul planșeului (ce e deasupra)</div>
+  <div class="plan-row">
+    <button class="plan-btn on" onclick="selPlan('beton',this)"><span class="pb-icon">▪</span>Placă beton turnată</button>
+    <button class="plan-btn" onclick="selPlan('lemn',this)"><span class="pb-icon">▬</span>Grinzi lemn + podea</button>
+    <button class="plan-btn" onclick="selPlan('acop',this)"><span class="pb-icon">⌂</span>Acoperiș direct (fără placă)</button>
+    <button class="plan-btn" onclick="selPlan('prefab',this)"><span class="pb-icon">⊟</span>Fâșii prefabricate</button>
+  </div>
+</div>
+
+<!-- TEREN -->
+<div class="sec">
+  <div class="sec-lbl">Tipul terenului de fundare</div>
+  <div class="teren-row">
+    <button class="ter-btn on" onclick="selTer('bun',this)">🪨 Teren bun<br><small>pietriș, argilă tare</small></button>
+    <button class="ter-btn" onclick="selTer('mediu',this)">🟫 Teren mediu<br><small>argilă normală</small></button>
+    <button class="ter-btn" onclick="selTer('slab',this)">🟡 Teren slab<br><small>nisip, pământ moale</small></button>
+  </div>
+</div>
+
+<!-- ELEMENTE -->
+<div class="sec">
+  <div class="sec-lbl">Ce vreau să calculez</div>
+  <div class="elems">
+    <button class="el-btn on" onclick="togEl('stalp',this)"><span class="ei">⬛</span>Stâlp</button>
+    <button class="el-btn on" onclick="togEl('grinda',this)"><span class="ei">▬</span>Grindă</button>
+    <button class="el-btn on" onclick="togEl('placa',this)"><span class="ei">▪</span>Placă / Planșeu</button>
+    <button class="el-btn on" onclick="togEl('fundatie',this)"><span class="ei">⬜</span>Fundație</button>
+    <button class="el-btn" onclick="togEl('zid',this)"><span class="ei">🧱</span>Zid exterior</button>
+    <button class="el-btn" onclick="togEl('acoperis',this)"><span class="ei">⌂</span>Acoperiș 2 ape</button>
+    <button class="el-btn" onclick="togEl('trepte',this)"><span class="ei">⬆</span>Scară / Trepte</button>
+  </div>
+</div>
+
+<div class="calc-wrap">
+  <button class="calc-btn" onclick="calculeaza()">Calculează</button>
+</div>
+
+<div class="results" id="results"></div>
+
+<script>
+const LOCALITATI = [
+  {n:'Focșani',j:'Vrancea',z:'A',ag:0.35},
+  {n:'Adjud',j:'Vrancea',z:'A',ag:0.35},
+  {n:'Panciu',j:'Vrancea',z:'A',ag:0.35},
+  {n:'Mărășești',j:'Vrancea',z:'A',ag:0.35},
+  {n:'București',j:'Ilfov',z:'B',ag:0.30},
+  {n:'Sector 1',j:'București',z:'B',ag:0.30},
+  {n:'Sector 2',j:'București',z:'B',ag:0.30},
+  {n:'Sector 3',j:'București',z:'B',ag:0.30},
+  {n:'Sector 4',j:'București',z:'B',ag:0.30},
+  {n:'Sector 5',j:'București',z:'B',ag:0.30},
+  {n:'Sector 6',j:'București',z:'B',ag:0.30},
+  {n:'Brăila',j:'Brăila',z:'B',ag:0.30},
+  {n:'Galați',j:'Galați',z:'B',ag:0.30},
+  {n:'Buzău',j:'Buzău',z:'B',ag:0.30},
+  {n:'Râmnicu Sărat',j:'Buzău',z:'B',ag:0.30},
+  {n:'Slobozia',j:'Ialomița',z:'B',ag:0.30},
+  {n:'Urziceni',j:'Ialomița',z:'B',ag:0.30},
+  {n:'Fetești',j:'Ialomița',z:'B',ag:0.30},
+  {n:'Călărași',j:'Călărași',z:'B',ag:0.30},
+  {n:'Giurgiu',j:'Giurgiu',z:'B',ag:0.30},
+  {n:'Alexandria',j:'Teleorman',z:'B',ag:0.30},
+  {n:'Roșiorii de Vede',j:'Teleorman',z:'B',ag:0.30},
+  {n:'Turnu Măgurele',j:'Teleorman',z:'B',ag:0.30},
+  {n:'Ploiești',j:'Prahova',z:'B',ag:0.30},
+  {n:'Câmpina',j:'Prahova',z:'B',ag:0.30},
+  {n:'Sinaia',j:'Prahova',z:'B',ag:0.30},
+  {n:'Bacău',j:'Bacău',z:'B',ag:0.30},
+  {n:'Onești',j:'Bacău',z:'B',ag:0.30},
+  {n:'Moinești',j:'Bacău',z:'B',ag:0.30},
+  {n:'Comănești',j:'Bacău',z:'B',ag:0.30},
+  {n:'Iași',j:'Iași',z:'C',ag:0.20},
+  {n:'Târgu Frumos',j:'Iași',z:'C',ag:0.20},
+  {n:'Pașcani',j:'Iași',z:'C',ag:0.20},
+  {n:'Suceava',j:'Suceava',z:'C',ag:0.20},
+  {n:'Fălticeni',j:'Suceava',z:'C',ag:0.20},
+  {n:'Rădăuți',j:'Suceava',z:'C',ag:0.20},
+  {n:'Câmpulung Moldovenesc',j:'Suceava',z:'C',ag:0.20},
+  {n:'Vatra Dornei',j:'Suceava',z:'C',ag:0.20},
+  {n:'Botoșani',j:'Botoșani',z:'C',ag:0.20},
+  {n:'Dorohoi',j:'Botoșani',z:'C',ag:0.20},
+  {n:'Piatra Neamț',j:'Neamț',z:'C',ag:0.20},
+  {n:'Roman',j:'Neamț',z:'C',ag:0.20},
+  {n:'Târgu Neamț',j:'Neamț',z:'C',ag:0.20},
+  {n:'Vaslui',j:'Vaslui',z:'C',ag:0.20},
+  {n:'Bârlad',j:'Vaslui',z:'C',ag:0.20},
+  {n:'Huși',j:'Vaslui',z:'C',ag:0.20},
+  {n:'Tecuci',j:'Galați',z:'C',ag:0.20},
+  {n:'Târgoviște',j:'Dâmbovița',z:'C',ag:0.20},
+  {n:'Moreni',j:'Dâmbovița',z:'C',ag:0.20},
+  {n:'Găești',j:'Dâmbovița',z:'C',ag:0.20},
+  {n:'Pitești',j:'Argeș',z:'C',ag:0.20},
+  {n:'Câmpulung',j:'Argeș',z:'C',ag:0.20},
+  {n:'Curtea de Argeș',j:'Argeș',z:'C',ag:0.20},
+  {n:'Mioveni',j:'Argeș',z:'C',ag:0.20},
+  {n:'Slatina',j:'Olt',z:'C',ag:0.20},
+  {n:'Caracal',j:'Olt',z:'C',ag:0.20},
+  {n:'Balș',j:'Olt',z:'C',ag:0.20},
+  {n:'Craiova',j:'Dolj',z:'C',ag:0.20},
+  {n:'Băilești',j:'Dolj',z:'C',ag:0.20},
+  {n:'Calafat',j:'Dolj',z:'C',ag:0.20},
+  {n:'Drobeta-Turnu Severin',j:'Mehedinți',z:'C',ag:0.20},
+  {n:'Orșova',j:'Mehedinți',z:'C',ag:0.20},
+  {n:'Strehaia',j:'Mehedinți',z:'C',ag:0.20},
+  {n:'Râmnicu Vâlcea',j:'Vâlcea',z:'C',ag:0.20},
+  {n:'Drăgășani',j:'Vâlcea',z:'C',ag:0.20},
+  {n:'Corabia',j:'Olt',z:'C',ag:0.20},
+  {n:'Constanța',j:'Constanța',z:'C',ag:0.20},
+  {n:'Mangalia',j:'Constanța',z:'C',ag:0.20},
+  {n:'Medgidia',j:'Constanța',z:'C',ag:0.20},
+  {n:'Cernavodă',j:'Constanța',z:'C',ag:0.20},
+  {n:'Năvodari',j:'Constanța',z:'C',ag:0.20},
+  {n:'Tulcea',j:'Tulcea',z:'C',ag:0.20},
+  {n:'Babadag',j:'Tulcea',z:'C',ag:0.20},
+  {n:'Cluj-Napoca',j:'Cluj',z:'D',ag:0.15},
+  {n:'Turda',j:'Cluj',z:'D',ag:0.15},
+  {n:'Dej',j:'Cluj',z:'D',ag:0.15},
+  {n:'Câmpia Turzii',j:'Cluj',z:'D',ag:0.15},
+  {n:'Gherla',j:'Cluj',z:'D',ag:0.15},
+  {n:'Huedin',j:'Cluj',z:'D',ag:0.15},
+  {n:'Brașov',j:'Brașov',z:'D',ag:0.15},
+  {n:'Făgăraș',j:'Brașov',z:'D',ag:0.15},
+  {n:'Săcele',j:'Brașov',z:'D',ag:0.15},
+  {n:'Codlea',j:'Brașov',z:'D',ag:0.15},
+  {n:'Zărnești',j:'Brașov',z:'D',ag:0.15},
+  {n:'Predeal',j:'Brașov',z:'D',ag:0.15},
+  {n:'Rupea',j:'Brașov',z:'D',ag:0.15},
+  {n:'Sibiu',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Mediaș',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Cisnădie',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Agnita',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Avrig',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Dumbrăveni',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Copșa Mică',j:'Sibiu',z:'D',ag:0.15},
+  {n:'Alba Iulia',j:'Alba',z:'D',ag:0.15},
+  {n:'Sebeș',j:'Alba',z:'D',ag:0.15},
+  {n:'Blaj',j:'Alba',z:'D',ag:0.15},
+  {n:'Aiud',j:'Alba',z:'D',ag:0.15},
+  {n:'Cugir',j:'Alba',z:'D',ag:0.15},
+  {n:'Abrud',j:'Alba',z:'D',ag:0.15},
+  {n:'Câmpeni',j:'Alba',z:'D',ag:0.15},
+  {n:'Târgu Mureș',j:'Mureș',z:'D',ag:0.15},
+  {n:'Sighișoara',j:'Mureș',z:'D',ag:0.15},
+  {n:'Reghin',j:'Mureș',z:'D',ag:0.15},
+  {n:'Târnăveni',j:'Mureș',z:'D',ag:0.15},
+  {n:'Luduș',j:'Mureș',z:'D',ag:0.15},
+  {n:'Sighetul Marmației',j:'Maramureș',z:'D',ag:0.15},
+  {n:'Baia Mare',j:'Maramureș',z:'D',ag:0.15},
+  {n:'Borșa',j:'Maramureș',z:'D',ag:0.15},
+  {n:'Vișeu de Sus',j:'Maramureș',z:'D',ag:0.15},
+  {n:'Târgu Lăpuș',j:'Maramureș',z:'D',ag:0.15},
+  {n:'Deva',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Hunedoara',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Petroșani',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Orăștie',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Brad',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Vulcan',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Lupeni',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Petrila',j:'Hunedoara',z:'D',ag:0.15},
+  {n:'Bistrița',j:'Bistrița-Năsăud',z:'D',ag:0.15},
+  {n:'Năsăud',j:'Bistrița-Năsăud',z:'D',ag:0.15},
+  {n:'Beclean',j:'Bistrița-Năsăud',z:'D',ag:0.15},
+  {n:'Sfântu Gheorghe',j:'Covasna',z:'D',ag:0.15},
+  {n:'Târgu Secuiesc',j:'Covasna',z:'D',ag:0.15},
+  {n:'Miercurea Ciuc',j:'Harghita',z:'D',ag:0.15},
+  {n:'Odorheiu Secuiesc',j:'Harghita',z:'D',ag:0.15},
+  {n:'Toplița',j:'Harghita',z:'D',ag:0.15},
+  {n:'Gheorgheni',j:'Harghita',z:'D',ag:0.15},
+  {n:'Sinaia',j:'Prahova',z:'D',ag:0.15},
+  {n:'Azuga',j:'Prahova',z:'D',ag:0.15},
+  {n:'Bușteni',j:'Prahova',z:'D',ag:0.15},
+  {n:'Timișoara',j:'Timiș',z:'E',ag:0.10},
+  {n:'Lugoj',j:'Timiș',z:'E',ag:0.10},
+  {n:'Deta',j:'Timiș',z:'E',ag:0.10},
+  {n:'Jimbolia',j:'Timiș',z:'E',ag:0.10},
+  {n:'Sânnicolau Mare',j:'Timiș',z:'E',ag:0.10},
+  {n:'Arad',j:'Arad',z:'E',ag:0.10},
+  {n:'Lipova',j:'Arad',z:'E',ag:0.10},
+  {n:'Ineu',j:'Arad',z:'E',ag:0.10},
+  {n:'Chișineu-Criș',j:'Arad',z:'E',ag:0.10},
+  {n:'Oradea',j:'Bihor',z:'E',ag:0.10},
+  {n:'Salonta',j:'Bihor',z:'E',ag:0.10},
+  {n:'Beiuș',j:'Bihor',z:'E',ag:0.10},
+  {n:'Marghita',j:'Bihor',z:'E',ag:0.10},
+  {n:'Aleșd',j:'Bihor',z:'E',ag:0.10},
+  {n:'Satu Mare',j:'Satu Mare',z:'E',ag:0.10},
+  {n:'Carei',j:'Satu Mare',z:'E',ag:0.10},
+  {n:'Negrești-Oaș',j:'Satu Mare',z:'E',ag:0.10},
+  {n:'Zalău',j:'Sălaj',z:'E',ag:0.10},
+  {n:'Șimleu Silvaniei',j:'Sălaj',z:'E',ag:0.10},
+  {n:'Reșița',j:'Caraș-Severin',z:'E',ag:0.10},
+  {n:'Caransebeș',j:'Caraș-Severin',z:'E',ag:0.10},
+  {n:'Moldova Nouă',j:'Caraș-Severin',z:'E',ag:0.10},
+  {n:'Anina',j:'Caraș-Severin',z:'E',ag:0.10},
+  {n:'Târgu Jiu',j:'Gorj',z:'E',ag:0.10},
+  {n:'Motru',j:'Gorj',z:'E',ag:0.10},
+  {n:'Rovinari',j:'Gorj',z:'E',ag:0.10},
+];
+
+const ZONA_INFO = {
+  A:{label:'Zona A — ag=0.35g',desc:'Seismicitate FOARTE RIDICATĂ (Vrancea)',col:'A'},
+  B:{label:'Zona B — ag=0.30g',desc:'Seismicitate RIDICATĂ',col:'B'},
+  C:{label:'Zona C — ag=0.20g',desc:'Seismicitate MODERATĂ',col:'C'},
+  D:{label:'Zona D — ag=0.15g',desc:'Seismicitate REDUSĂ',col:'D'},
+  E:{label:'Zona E — ag=0.10g',desc:'Seismicitate MINIMĂ',col:'E'},
+};
+
+const cams=[{L:'4.60',W:'5.50',H:''},{L:'4',W:'9',H:''}];
+let ci=0;
+let locSel=null;
+let planSel='beton';
+let terenSel='bun';
+const elSel={stalp:true,grinda:true,placa:true,fundatie:true,zid:false,acoperis:false,trepte:false};
+
+function gv(id){return parseFloat(document.getElementById(id).value)||0;}
+function r(n,d=2){return +n.toFixed(d);}
+function rc(v,l,full){return `<div class="rc${full?' full':''}"><div class="rv">${v}</div><div class="rl">${l}</div></div>`;}
+function blk(tag,val,sub,grid,ok,info){
+  return `<div class="rblk">
+    <div class="rhead"><div class="rh-tag">${tag}</div><div class="rh-val">${val}</div><div class="rh-sub">${sub}</div></div>
+    <div class="rbody"><div class="rgrid">${grid}</div>${ok?`<div class="rok">${ok}</div>`:''}${info?`<div class="rinfo">${info}</div>`:''}</div>
+  </div>`;
+}
+
+function searchLoc(q){
+  const dd=document.getElementById('loc-dd');
+  if(q.length<2){dd.style.display='none';return;}
+  const ql=q.toLowerCase().replace(/[ăâ]/g,'a').replace(/[îí]/g,'i').replace(/ș/g,'s').replace(/ț/g,'t');
+  const res=LOCALITATI.filter(l=>{
+    const nl=l.n.toLowerCase().replace(/[ăâ]/g,'a').replace(/[îí]/g,'i').replace(/ș/g,'s').replace(/ț/g,'t');
+    const jl=l.j.toLowerCase().replace(/[ăâ]/g,'a').replace(/[îí]/g,'i').replace(/ș/g,'s').replace(/ț/g,'t');
+    return nl.includes(ql)||jl.includes(ql);
+  }).slice(0,10);
+  if(!res.length){dd.style.display='none';return;}
+  dd.innerHTML=res.map(l=>`
+    <div class="loc-item zona-${l.z}" onclick="selectLoc(${LOCALITATI.indexOf(l)})">
+      <div><div class="li-name">${l.n}</div><div style="font-size:11px;color:#888">${l.j}</div></div>
+      <span class="li-zona">Zona ${l.z}</span>
+    </div>`).join('');
+  dd.style.display='block';
+}
+function selectLoc(idx){
+  locSel=LOCALITATI[idx];
+  document.getElementById('loc-input').value=locSel.n+' ('+locSel.j+')';
+  document.getElementById('loc-dd').style.display='none';
+  const zi=ZONA_INFO[locSel.z];
+  document.getElementById('loc-badge').innerHTML=
+    `<span class="loc-badge ${locSel.z}">Zona ${locSel.z} — ag=${locSel.ag}g &nbsp;|&nbsp; ${zi.desc}</span>`;
+  clearRes();
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.loc-wrap')) document.getElementById('loc-dd').style.display='none';
+});
+
+function saveCam(){cams[ci]={L:document.getElementById('iL').value,W:document.getElementById('iW').value,H:document.getElementById('iH').value};}
+function loadCam(i){
+  const c=cams[i]||{L:'',W:'',H:''};
+  document.getElementById('iL').value=c.L||'';
+  document.getElementById('iW').value=c.W||'';
+  document.getElementById('iH').value=c.H||'';
+  document.getElementById('cam-lbl').textContent=`Dimensiuni camera ${i+1}`;
+}
+function selCam(i,el){saveCam();ci=i;document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('active'));el.classList.add('active');loadCam(i);clearRes();}
+function addCam(){
+  saveCam();const n=cams.length;cams.push({L:'',W:'',H:''});
+  const tabs=document.getElementById('ctabs'),add=tabs.querySelector('.ctab-add');
+  const btn=document.createElement('div');btn.className='ctab';btn.textContent=`Camera ${n+1}`;
+  btn.onclick=()=>selCam(n,btn);tabs.insertBefore(btn,add);selCam(n,btn);
+}
+function selPlan(v,el){planSel=v;document.querySelectorAll('.plan-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');clearRes();}
+function selTer(v,el){terenSel=v;document.querySelectorAll('.ter-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');clearRes();}
+function togEl(k,el){elSel[k]=!elSel[k];el.classList.toggle('on',elSel[k]);clearRes();}
+function clearRes(){const el=document.getElementById('results');el.innerHTML='';el.classList.remove('show');}
+
+function calculeaza(){
+  saveCam();
+  const L=gv('iL'), W=gv('iW'), H=gv('iH')||2.80;
+  if(!L&&!W){alert('Introdu cel puțin lungimea sau lățimea!');return;}
+  if(!locSel){alert('Selectează localitatea pentru a determina zona seismică!');return;}
+
+  const ag=locSel.ag;
+  const zona=locSel.z;
+  const hasBoth=L>0&&W>0;
+  const spanMax=hasBoth?Math.max(L,W):(L||W);
+  const spanMin=hasBoth?Math.min(L,W):spanMax;
+  const fs=1.0+(ag-0.10)/0.25*0.50;
+  const pTeren={bun:250,mediu:150,slab:80}[terenSel];
+  const gPlan={beton:5.5,prefab:4.5,lemn:2.5,acop:1.5}[planSel];
+
+  let html='';
+
+  if(elSel.stalp){
+    let sec=Math.max(spanMax/12*fs, 0.25);
+    sec=Math.ceil(sec/0.05)*0.05;
+    const scm=r(sec*100,0);
+    const arie=r(sec*sec*10000,0);
+    const proc_rec=Math.max(0.010, 0.010+(ag-0.10)*0.04);
+    const as_nec=r(arie*proc_rec,1);
+    const as_bara=1.54;
+    const diam_bara=14;
+    let nb=Math.ceil(as_nec/as_bara);
+    nb=Math.max(Math.ceil(nb/4)*4,4);
+    const as_pus=r(nb*as_bara,1);
+    const pas=Math.floor(Math.min(20,sec*100,8*diam_bara/10)/5)*5;
+    const pas_crit=Math.floor(pas/2/5)*5||5;
+    const vol_etaj=r(sec*sec*H,3);
+    const cof_etaj=r(4*sec*H,2);
+    html+=blk('Stâlp — Parter',`${scm} × ${scm} cm`,
+      `${locSel.n}, Zona ${zona} (ag=${ag}g), span max ${spanMax}m`,
+      rc(scm+'×'+scm+' cm','Secțiune stâlp')+
+      rc(arie+' cm²','Arie secțiune')+
+      rc(r(H,2)+' m','Înălțime etaj')+
+      rc(vol_etaj+' m³','Beton / stâlp')+
+      rc(cof_etaj+' m²','Cofraj / stâlp')+
+      rc(r(proc_rec*100,1)+'%','Procent armare (zona '+zona+')')+
+      rc(nb+' bare Ø'+diam_bara+'mm','Armătură longitudinală',true)+
+      rc('Etrieri Ø8/'+pas+'cm curent, /'+pas_crit+'cm zona critică','(zona critică = ±max(1.5×sec, 0.45m) de la nod)',true),
+      '✓ Stâlp '+scm+'×'+scm+'cm — '+nb+'Ø'+diam_bara+' + Etrieri Ø8/'+pas+'cm',
+      'As necesar: '+as_nec+' cm² → pus: '+as_pus+' cm² ('+nb+' bare Ø'+diam_bara+'mm)'+
+      '<br>Verificare: '+as_pus+' cm² ≥ '+as_nec+' cm² ✓ | Procent real: '+r(as_pus/arie*100,2)+'%');
+  }
+
+  if(elSel.grinda){
+    if(!hasBoth){html+=`<div class="rerr">Grindă — introdu și lungimea și lățimea.</div>`;}
+    else{
+      const fac_h={beton:10,prefab:10,lemn:10,acop:8}[planSel];
+      let hG=spanMax/fac_h;
+      hG=Math.ceil(hG/0.05)*0.05;
+      if(hG<0.30)hG=0.30;
+      let bG=Math.max(hG*0.4,0.20);
+      bG=Math.ceil(bG/0.05)*0.05;
+      const q=gPlan*spanMin+bG*hG*25;
+      const M=q*spanMax*spanMax/8;
+      const z=0.9*hG;
+      const fyd=355;
+      const as_nec=r(M/(z*fyd)*10000,1);
+      const nb=Math.max(Math.ceil(as_nec/3.14),2);
+      const as_pus=r(nb*3.14,1);
+      const vol=r(bG*hG*spanMax,3);
+      const nb_reaz=Math.max(Math.ceil(nb*0.6/2)*2,2);
+      html+=blk('Grindă',`${r(bG*100,0)} × ${r(hG*100,0)} cm`,
+        `lățime × înălțime, span ${spanMax}m, q=${r(q,1)}kN/m`,
+        rc(spanMax+' m','Lungime grindă')+
+        rc(r(bG*100,0)+'×'+r(hG*100,0)+' cm','Secțiune (b×h)')+
+        rc(r(q,1)+' kN/m','Încărcare liniară')+
+        rc(r(M,1)+' kNm','Moment maxim câmp')+
+        rc(vol+' m³','Beton grindă')+
+        rc(as_nec+' cm²','As necesar câmp')+
+        rc(nb+' bare Ø20mm','Armătură câmp (jos)',true)+
+        rc(nb_reaz+' bare Ø16mm','Armătură reazem (sus, L/4)',true)+
+        rc('2 bare Ø12mm','Armătură montaj (sus, câmp)',true)+
+        rc('Etrieri Ø8/10cm reazem — Ø8/15cm câmp','Etrieri',true),
+        '✓ Grindă '+r(bG*100,0)+'×'+r(hG*100,0)+'cm — '+nb+'Ø20 jos, '+nb_reaz+'Ø16 sus-reazem, 2Ø12 montaj',
+        'As necesar: '+as_nec+' cm² → pus: '+as_pus+' cm² ✓<br>Moment: M=q×L²/8='+r(q,1)+'×'+spanMax+'²/8='+r(M,1)+' kNm');
+    }
+  }
+
+  if(elSel.placa){
+    if(!hasBoth){html+=`<div class="rerr">Placă — introdu și lungimea și lățimea.</div>`;}
+    else if(planSel==='acop'){
+      html+=blk('Placă / Planșeu','—',
+        'Ai ales acoperiș direct — nu există placă de planșeu','',
+        '','Nu se calculează placă pentru acoperiș direct. Dacă ai totuși o placă, schimbă tipul planșeului.');
+    } else {
+      const rap=spanMin/spanMax;
+      const alpha=rap>0.5?35:30;
+      let g=spanMax/alpha;
+      g=Math.ceil(g/0.005)*0.005;
+      if(g<0.10)g=0.10;
+      if(planSel==='beton'&&g<0.12)g=0.12;
+      const gcm=r(g*100,0);
+      const sup=r(L*W,2);
+      const vol=r(sup*g,3);
+      const grv=r(vol*2500/1000,1);
+      const g_per=g*25+1.5;
+      const q_util=2.0;
+      const q_tot=r(g_per+q_util,2);
+      const d=g-0.02;
+      const as_min=Math.max(0.26*2.2/500*100*d*100, 0.0013*100*d*100);
+      const as_rec=Math.max(as_min, 0.005*g*10000);
+      const as_nec=r(as_rec,2);
+      let dm=10;
+      let ds=Math.min(200,Math.floor((Math.PI*(dm/2)*(dm/2)/as_nec)*100/10)*10);
+      if(ds<100){dm=12;ds=Math.min(200,Math.floor((Math.PI*(dm/2)*(dm/2)/as_nec)*100/10)*10);}
+      if(ds<100)ds=100;
+      const ds_ly=Math.min(200,ds+50);
+      const ds_neg=Math.max(100,Math.round(ds*0.75/10)*10);
+      const as_pus=r(Math.PI*(dm/2)*(dm/2)/(ds/100),2);
+      html+=blk('Placă / Planșeu',`${gcm} cm`,
+        `grosime — ${L}×${W}m, raport ${r(rap,2)} → ${rap>0.5?'2 direcții':'1 direcție'}`,
+        rc(sup+' m²','Suprafață')+
+        rc(gcm+' cm','Grosime')+
+        rc(vol+' m³','Beton')+
+        rc(grv+' tone','Greutate')+
+        rc(q_tot+' kN/m²','Încărcare totală calcul')+
+        rc(as_nec+' cm²/m','As necesar minim')+
+        rc('Ø'+dm+'/'+ds+'mm','Rețea Lx — direcție scurtă, jos',true)+
+        rc('Ø'+dm+'/'+ds_ly+'mm','Rețea Ly — direcție lungă, jos',true)+
+        rc('Ø'+dm+'/'+ds_neg+'mm pe L/4','Armătură negativă sus la reazeme',true),
+        '✓ Placă '+gcm+'cm — Ø'+dm+'/'+ds+'mm Lx + Ø'+dm+'/'+ds_ly+'mm Ly',
+        'As necesar: '+as_nec+' cm²/m → pus Ø'+dm+'/'+ds+'mm = '+as_pus+' cm²/m ✓<br>'+
+        'Grosime min (L/'+alpha+'): '+r(spanMax/alpha*100,0)+'cm → adoptată: '+gcm+'cm');
+    }
+  }
+
+  if(elSel.fundatie){
+    if(!hasBoth){html+=`<div class="rerr">Fundație — introdu și lungimea și lățimea.</div>`;}
+    else{
+      const G_plan=gPlan*L*W;
+      const G_zid=2*(L+W)*H*0.30*18;
+      const G_util=2.0*L*W;
+      const G_funda=0.15*G_plan;
+      const N_tot=r(G_plan+G_zid+G_util+G_funda,0);
+      const perim=r(2*(L+W),2);
+      const N_lm=N_tot/perim;
+      let lat=r(N_lm/(pTeren*1.4),2);
+      if(lat<0.50)lat=0.50;
+      if(lat<0.60&&terenSel==='slab')lat=0.80;
+      lat=Math.ceil(lat/0.05)*0.05;
+      const h_min=0.90;
+      const h_fund=Math.max(h_min,lat*0.5);
+      const h_fin=Math.ceil(h_fund/0.05)*0.05;
+      const vol_b=r(perim*lat*h_fin,2);
+      const vol_eg=r(perim*(lat+0.10)*0.10,2);
+      const sap=r(perim*(lat+0.50)*(h_fin+0.30),2);
+      const p_efectiva=r(N_tot/(perim*lat),1);
+      const ok_pres=p_efectiva<=pTeren;
+      html+=blk('Fundație Bandă',`${lat}m lățime × ${h_fin}m adânc`,
+        `perimetru ${perim}m — ${locSel.n}, teren ${terenSel} (${pTeren}kPa)`,
+        rc(N_tot+' kN','Sarcină totală estimată')+
+        rc(r(N_lm,0)+' kN/m','Sarcină liniară pe bandă')+
+        rc(lat+' m','Lățime bandă')+
+        rc(h_fin+' m','Adâncime (min 0.90m îngheț)')+
+        rc(perim+' m','Lungime totală')+
+        rc(vol_b+' m³','Beton fundație C16/20')+
+        rc(vol_eg+' m³','Beton egalizare C8/10 (10cm)')+
+        rc(sap+' m³','Săpătură (cu spor lucru)')+
+        rc(p_efectiva+' kPa','Presiune efectivă pe teren')+
+        rc(pTeren+' kPa','Capacitate teren adoptată')+
+        rc('4 bare Ø14mm (2sus+2jos)','Armătură longitudinală',true)+
+        rc('Etrieri Ø8/20cm','Pe toată lungimea',true),
+        (ok_pres?'✓':'⚠')+' Presiune efectivă: '+p_efectiva+'kPa '+(ok_pres?'≤':'>')+' '+pTeren+'kPa (teren '+terenSel+') '+(ok_pres?'✓':'— MĂREȘTE lățimea!'),
+        'N total = G_planșeu('+r(G_plan,0)+')+G_ziduri('+r(G_zid,0)+')+G_utilă('+r(G_util,0)+') = '+N_tot+' kN<br>'+
+        'B = N_lm/(p×γ) = '+r(N_lm,0)+'/('+pTeren+'×1.4) = '+r(N_lm/(pTeren*1.4),2)+'m → adoptat '+lat+'m');
+    }
+  }
+
+  if(elSel.zid){
+    if(!hasBoth){html+=`<div class="rerr">Zid — introdu și lungimea și lățimea.</div>`;}
+    else{
+      const perim=r(2*(L+W),2);
+      const sup_brut=r(perim*H,2);
+      const gros=0.30;
+      const vol=r(sup_brut*gros,2);
+      const nb=Math.ceil(vol*26.6*1.05);
+      const mort=r(vol*0.20,2);
+      const n_bui=Math.ceil(perim/1.5);
+      html+=blk('Zid Exterior BCA 30cm','30 cm',
+        `grosime standard — perimetru ${perim}m × H${r(H,2)}m`,
+        rc(perim+' m','Perimetru')+
+        rc(sup_brut+' m²','Suprafață brută')+
+        rc(vol+' m³','Volum zidărie')+
+        rc(nb+' buc','Blocuri BCA 60×25×30 (+5%)')+
+        rc(mort+' m³','Mortar adeziv BCA')+
+        rc(n_bui+' buc (est.)','Buiandrugi goluri')+
+        rc('Sâmburi beton la colțuri și goluri','Ø12mm, betonați',true),
+        '✓ '+nb+' blocuri BCA + '+mort+'m³ mortar + '+n_bui+' buiandrugi',null);
+    }
+  }
+
+  if(elSel.acoperis){
+    if(!hasBoth){html+=`<div class="rerr">Acoperiș — introdu și lungimea și lățimea.</div>`;}
+    else{
+      const panta=30;
+      const str=0.50;
+      const pR=panta*Math.PI/180;
+      const lp=(W/2)/Math.cos(pR);
+      const hc=r((W/2)*Math.tan(pR),2);
+      const sn=r(2*L*lp,2);
+      const sb=r(2*(L+2*str)*(lp+str),2);
+      const nc=Math.ceil(L/0.90)*2+2;
+      const lc=r(lp+0.60,2);
+      const n_pane=3;
+      const l_pana=r(L+0.60,2);
+      const vol_lemn=r(nc*0.08*0.16*lc + n_pane*0.10*0.16*l_pana,3);
+      const nt=Math.ceil(sb*14*1.10);
+      html+=blk('Acoperiș 2 Ape (30°)',`${hc}m`,
+        `înălțime coamă — pantă 30° pe lățime ${W}m`,
+        rc(sn+' m²','Suprafață netă')+
+        rc(sb+' m²','Cu streașină 50cm')+
+        rc(hc+' m','Înălțime coamă')+
+        rc('30°','Pantă')+
+        rc(nc+' buc','Capriori 8×16cm (pas 90cm)')+
+        rc(lc+' m/buc','Lungime caprior')+
+        rc(n_pane+' buc × '+l_pana+'m','Pane 10×16cm')+
+        rc(vol_lemn+' m³','Volum total lemn')+
+        rc(nt+' buc','Țiglă ceramică (+10%)',true),
+        '✓ '+sb+'m² — '+nt+' țigle + '+nc+' capriori 8×16/'+lc+'m + '+n_pane+' pane 10×16/'+l_pana+'m',
+        'Volum lemn total: '+vol_lemn+'m³ (capriori + pane)');
+    }
+  }
+
+  if(elSel.trepte){
+    const dh=H;
+    const nr=Math.round(dh*100/17);
+    const ct=r(dh*100/nr,1);
+    const vt=r(63-2*ct,1);
+    const bl=r(2*ct+vt,1);
+    const ok_bl=Math.abs(bl-63)<1.5;
+    const ung=r(Math.atan(ct/vt)*180/Math.PI,1);
+    const ok_ung=ung>=25&&ung<=45;
+    const lor=r(nr*vt/100,2);
+    const lr=r(Math.sqrt(lor*lor+dh*dh),2);
+    const gp=Math.max(Math.ceil((lr/20)/0.005)*0.005,0.10);
+    html+=blk('Scară / Trepte',`${nr} trepte`,
+      `H=${r(dh,2)}m — ct=${ct}cm × vt=${vt}cm`,
+      rc(ct+'cm','Contratreaptă (înălțime)')+
+      rc(vt+'cm','Vatrai (lungime)')+
+      rc(bl+'cm','Blondel (ideal=63cm)')+
+      rc(ung+'°','Unghi scară (ok: 25-45°)')+
+      rc(lor+' m','Lungime orizontală')+
+      rc(lr+' m','Lungime rampă (înclinată)')+
+      rc(r(gp*100,0)+' cm','Grosime placă rampă')+
+      rc('Ø10/150mm jos + Ø10/200mm sus','Armătură rampă',true),
+      (ok_bl?'✓ Blondel OK':'⚠ Blondel: ajustează')+' ('+bl+'cm)'+
+      ' — '+(ok_ung?'✓ Unghi '+ung+'° OK':'⚠ Unghi '+ung+'° — prea '+((ung<25)?'mic':'mare')),null);
+  }
+
+  if(!html){html=`<div class="rerr">Selectează cel puțin un element de calculat.</div>`;}
+
+  html+=`<div class="legal">
+    ⚠ <strong>Calcule orientative</strong> conform normativelor românești NP112, P100-1/2013, SR EN 1992.<br>
+    Pentru execuție, dimensiunile finale trebuie verificate de un <strong>inginer structurist autorizat</strong>.
+  </div>`;
+
+  const el=document.getElementById('results');
+  el.innerHTML=html;el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+loadCam(0);
+</script>
+</body>
+</html>
