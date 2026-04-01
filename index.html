@@ -439,17 +439,17 @@ body{
   <div class="dims">
     <div class="dbox">
       <label>Lungime</label>
-      <input type="text" id="iL" inputmode="decimal" placeholder="4.60" oninput="fixVirgula(this);clearRes()">
+      <input type="text" id="iL" inputmode="text" placeholder="4.60" oninput="fixVirgula(this);clearRes()">
       <span class="unit">m</span>
     </div>
     <div class="dbox">
       <label>Lățime</label>
-      <input type="text" id="iW" inputmode="decimal" placeholder="5.50" oninput="fixVirgula(this);clearRes()">
+      <input type="text" id="iW" inputmode="text" placeholder="5.50" oninput="fixVirgula(this);clearRes()">
       <span class="unit">m</span>
     </div>
     <div class="dbox">
       <label>H etaj</label>
-      <input type="text" id="iH" inputmode="decimal" placeholder="2.80" oninput="fixVirgula(this);clearRes()">
+      <input type="text" id="iH" inputmode="text" placeholder="2.80" oninput="fixVirgula(this);clearRes()">
       <span class="unit">m</span>
     </div>
   </div>
@@ -671,7 +671,7 @@ let planSel='beton';
 let terenSel='bun';
 const elSel={stalp:true,grinda:true,placa:true,fundatie:true,zid:false,acoperis:false,trepte:false};
 
-function fixVirgula(el){el.value=el.value.replace(",",".");}function gv(id){return parseFloat(document.getElementById(id).value.replace(",","."))||0;}
+function fixVirgula(el){var v=el.value.replace(/,/g,".");var p=v.split(".");if(p.length>2)v=p[0]+"."+p.slice(1).join("");el.value=v;}function gv(id){var v=document.getElementById(id).value.replace(/,/g,".");return parseFloat(v)||0;}
 function r(n,d=2){return +n.toFixed(d);}
 function rc(v,l,full){return `<div class="rc${full?' full':''}"><div class="rv">${v}</div><div class="rl">${l}</div></div>`;}
 function blk(tag,val,sub,grid,ok,info){
